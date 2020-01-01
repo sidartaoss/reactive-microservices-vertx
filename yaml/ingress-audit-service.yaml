@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: public-routing-audit-service
+spec:
+  rules:
+    - host: audit-service-reactive-microservices.sidartasilva.io
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: audit-service
+              servicePort: 8089

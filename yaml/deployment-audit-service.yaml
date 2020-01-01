@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: audit-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: audit-service
+  template:
+    metadata:
+      labels:
+        app: audit-service
+    spec:
+      containers:
+      - name: audit-service
+        image: sidartasilva/audit-service:latest
+        env:
+          - name: DB_USERNAME
+            valueFrom:
+               secretKeyRef:
+                 name: audit-database-config
+                 key: user
+          - name: DB_PASSWORD
+            valueFrom:
+               secretKeyRef:
+                 name: audit-database-config
+                 key: password
+          - name: DB_URL
+            valueFrom:
+               secretKeyRef:
+                 name: audit-database-config
+                 key: url
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5701
+        - containerPort: 8089
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: audit-service
+spec:
+  type: NodePort
+  selector:
+    app: audit-service
+  ports:
+  - name: hazelcast
+    port: 5701
+  - name: app
+    port: 8089
